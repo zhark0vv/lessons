@@ -37,6 +37,10 @@ import (
 )
 
 func main() {
+	// Из интересного: в Go кооперативно-вытесняющая многозадачность, что означает, что горутины сами передают управление друг другу.
+	// До версии 1.14 была чисто кооперативная многозадачность, но с 1.14 добавились системные вызовы, которые позволяют Go выполнять системные вызовы в отдельных потоках.
+	// Если запустить этот код с GOMAXPROCS(1), то горутины будут выполняться последовательно, так как один процессор не может выполнять несколько горутин одновременно.
+	// На версии до 1.14 горутина 2 не запустилась бы никогда.
 	runtime.GOMAXPROCS(1)
 
 	var wg sync.WaitGroup
@@ -44,15 +48,15 @@ func main() {
 
 	go func() {
 		defer wg.Done()
-		for i := 0; i < 5; i++ {
-			fmt.Println("Goroutine 1:", i)
-			time.Sleep(time.Millisecond * 100)
+		for {
+			fmt.Println("Goroutine 1")
+			time.Sleep(time.Millisecond * 500)
 		}
 	}()
 
 	go func() {
 		defer wg.Done()
-		for i := 0; i < 5; i++ {
+		for i := 0; i < 100; i++ {
 			fmt.Println("Goroutine 2:", i)
 			time.Sleep(time.Millisecond * 100)
 		}
