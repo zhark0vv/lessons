@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	_ "net/http/pprof"
 	"sync"
@@ -20,35 +21,31 @@ http://localhost:6060/debug/pprof/goroutine?debug=1
 Мы видим, что горутины заведомо "держат" друг друга.
 */
 func main() {
-	go func() {
-		fmt.Println(http.ListenAndServe("localhost:6060", nil))
-	}()
+	var (
+		mu      sync.Mutex
+		wg      sync.WaitGroup
+		counter int
+	)
 
-	var wg sync.WaitGroup
-	var mu1, mu2 sync.Mutex
-
-	wg.Add(2)
-
+	wg.Add(3)
 	go func() {
 		defer wg.Done()
-		mu1.Lock()
-		fmt.Println("Goroutine 1 locked mu1")
-		mu2.Lock()
-		fmt.Println("Goroutine 1 locked mu2")
-		mu2.Unlock()
-		mu1.Unlock()
+		log.Fatal(http.ListenAndServe("localhost:6060", nil))
 	}()
 
 	go func() {
 		defer wg.Done()
-		mu2.Lock()
-		fmt.Println("Goroutine 2 locked mu2")
-		mu1.Lock()
-		fmt.Println("Goroutine 2 locked mu1")
-		mu1.Unlock()
-		mu2.Unlock()
+		mu.Lock()
+		counter++
+		fmt.Println("First goroutine finished, counter:", counter)
+	}()
+
+	go func() {
+		defer wg.Done()
+		mu.Lock()
+		counter++
+		fmt.Println("Second goroutine finished, counter:", counter)
 	}()
 
 	wg.Wait()
-	fmt.Println("Main completed")
 }
