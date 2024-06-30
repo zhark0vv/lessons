@@ -7,15 +7,15 @@ import (
 )
 
 func main() {
-	workerPoolExample()
-	doneChannelExample()
-	countingSemaphoreExample()
-	fanInFanOutExample()
+	// workerPoolExample()
+	// doneChannelExample()
+	// countingSemaphoreExample()
+	// fanInFanOutExample()
 }
 
 func workerPoolExample() {
 	const numWorkers = 3
-	tasks := []int{1, 2, 3, 4, 5}
+	tasks := []int{1, 2, 3, 4, 5} // ????
 	var wg sync.WaitGroup
 
 	taskChan := make(chan int, len(tasks))

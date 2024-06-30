@@ -8,9 +8,9 @@ import (
 
 func main() {
 	//syncWaitGroupExample()
-	syncAtomicExample()
+	// syncAtomicExample()
 	//syncOnceExample()
-	//syncMutexExample()
+	// syncMutexExample()
 	//syncRWMutexExample()
 }
 

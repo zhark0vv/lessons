@@ -8,11 +8,11 @@ import (
 )
 
 func main() {
-	contextBackgroundExample()
-	contextTODOExample()
-	contextWithCancelExample()
+	// contextBackgroundExample()
+	// contextTODOExample()
+	// contextWithCancelExample()
 	contextWithDeadlineExample()
-	contextWithTimeoutExample()
+	// contextWithTimeoutExample()
 }
 
 func contextBackgroundExample() {
@@ -43,8 +43,9 @@ func contextWithCancelExample() {
 }
 
 func contextWithDeadlineExample() {
-	deadline := time.Now().Add(2 * time.Second)
+	deadline := time.Date(2025, time.January, 1, 0, 0, 0, 0, time.UTC)
 	ctx, cancel := context.WithDeadline(context.Background(), deadline)
+
 	defer cancel()
 
 	doWork(ctx, "WithDeadline")
@@ -66,5 +67,22 @@ func doWork(ctx context.Context, name string) {
 			fmt.Printf("%s: done, reason: %v\n", name, ctx.Err())
 			return
 		}
+	}
+}
+
+func contextWithValueExample() {
+	processRequest(ctx)
+}
+
+type dbHelper struct{}
+
+func (*dbHelper) Query(ctx context.Context, sql string, args []interface{}) {
+	tx := ctx.Value("tx")
+
+	if tx != nil {
+		// use tx
+		tx.Exec(sql, args)
+	} else {
+		db.Exec(sql, args)
 	}
 }

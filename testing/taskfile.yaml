@@ -1,0 +1,35 @@
+version: '3'
+
+tasks:
+  generate-mocks:
+    cmds:
+      - go generate ./...
+    desc: "Generate mocks using mockery"
+
+  test:
+    cmds:
+      - go test -v ./...
+    desc: "Run all tests"
+
+  coverage:
+    cmds:
+      - go test -coverprofile=coverage.out ./...
+      - go tool cover -html=coverage.out -o coverage.html
+    desc: "Run tests with coverage and generate HTML report"
+
+  test-with-coverage:
+    deps: [generate-mocks]
+    cmds:
+      - task: test
+      - task: coverage
+    desc: "Generate mocks, run tests, and calculate coverage"
+
+  integration-test:
+    cmds:
+      - go test -tags=integration -v ./tests/...
+    desc: "Run integration tests"
+
+  e2e-test:
+    cmds:
+      - go test -tags=e2e -v ./tests/...
+    desc: "Run end-to-end tests"
