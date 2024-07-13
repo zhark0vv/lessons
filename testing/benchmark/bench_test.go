@@ -5,7 +5,7 @@ import (
 )
 
 func BenchmarkLinearSearch(b *testing.B) {
-	size := 10000000
+	size := 10_000_000
 	target := size - 1
 	arr := generateSortedSlice(size)
 

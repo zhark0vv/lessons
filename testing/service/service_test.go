@@ -22,7 +22,8 @@ func TestProcessData(t *testing.T) {
 			name: "successful data processing",
 			id:   1,
 			mockFunc: func(th *TestHelper) {
-				th.DataProvider.On("GetData", 1).Return("mocked data", nil)
+				th.DataProvider.On("GetData", context.Background(), 1).
+					Return("mocked data", nil)
 			},
 			expected:  "Processed: mocked data",
 			expectErr: nil,
@@ -31,7 +32,8 @@ func TestProcessData(t *testing.T) {
 			name: "provider returns error",
 			id:   2,
 			mockFunc: func(th *TestHelper) {
-				th.DataProvider.On("GetData", 2).Return("", assert.AnError)
+				th.DataProvider.On("GetData", context.Background(), 2).
+					Return("", assert.AnError)
 			},
 			expected:  "",
 			expectErr: assert.AnError,
