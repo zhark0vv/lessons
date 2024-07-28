@@ -11,18 +11,10 @@ import (
 
 type User struct {
 	ID       uuid.UUID
+	Address  Address
 	Name     string
 	Email    string
 	Password string
-}
-
-func NewUser(name, email, password string) *User {
-	return &User{
-		ID:       uuid.New(),
-		Name:     name,
-		Email:    email,
-		Password: password,
-	}
 }
 
 func (u *User) ChangeEmail(newEmail string) {

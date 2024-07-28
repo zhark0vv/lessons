@@ -7,6 +7,10 @@ import (
 	"lessons/cleanarch/internal/domain"
 )
 
+type cacheProvider interface {
+	Get(ctx context.Context, key string) (string, error)
+}
+
 type repository interface {
 	FindByID(ctx context.Context, id uuid.UUID) (*domain.User, error)
 	Save(ctx context.Context, user *domain.User) error
@@ -14,6 +18,7 @@ type repository interface {
 
 type UserService struct {
 	userRepository repository
+	cacheProvider  cacheProvider
 }
 
 func NewUserService(userRepo repository) *UserService {
