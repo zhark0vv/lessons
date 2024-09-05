@@ -1,0 +1,337 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>api: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">lessons/testing/api/api.go (87.5%)</option>
+				
+				<option value="file1">lessons/testing/benchmark/bench.go (0.0%)</option>
+				
+				<option value="file2">lessons/testing/repository/repository.go (100.0%)</option>
+				
+				<option value="file3">lessons/testing/service/mocks/data_provider.go (78.9%)</option>
+				
+				<option value="file4">lessons/testing/service/service.go (85.7%)</option>
+				
+				<option value="file5">lessons/testing/service/test_helper.go (100.0%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package api
+
+import (
+        "context"
+        "encoding/json"
+        "net/http"
+        "strconv"
+
+        "github.com/gorilla/mux"
+)
+
+type service interface {
+        ProcessData(ctx context.Context, id int) (string, error)
+}
+
+type API struct {
+        service service
+}
+
+func New(svc service) *API <span class="cov8" title="1">{
+        return &amp;API{service: svc}
+}</span>
+
+func (api *API) GetDataHandler(w http.ResponseWriter, r *http.Request) <span class="cov8" title="1">{
+        vars := mux.Vars(r)
+        id, err := strconv.Atoi(vars["id"])
+        if err != nil </span><span class="cov0" title="0">{
+                http.Error(w, "Invalid ID", http.StatusBadRequest)
+                return
+        }</span>
+
+        <span class="cov8" title="1">ctx := context.Background()
+        data, err := api.service.ProcessData(ctx, id)
+        if err != nil </span><span class="cov8" title="1">{
+                http.Error(w, "Data not found", http.StatusNotFound)
+                return
+        }</span>
+
+        <span class="cov8" title="1">w.Header().Set("Content-Type", "application/json")
+        json.NewEncoder(w).Encode(map[string]string{"data": data})</span>
+}
+
+func (api *API) Router() *mux.Router <span class="cov8" title="1">{
+        r := mux.NewRouter()
+        r.HandleFunc("/data/{id}", api.GetDataHandler).Methods("GET")
+        return r
+}</span>
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package benchmark
+
+func LinearSearch(arr []int, target int) int <span class="cov0" title="0">{
+        for i, v := range arr </span><span class="cov0" title="0">{
+                if v == target </span><span class="cov0" title="0">{
+                        return i
+                }</span>
+        }
+        <span class="cov0" title="0">return -1</span>
+}
+
+func BinarySearch(arr []int, target int) int <span class="cov0" title="0">{
+        left, right := 0, len(arr)-1
+        for left &lt;= right </span><span class="cov0" title="0">{
+                mid := left + (right-left)/2
+                if arr[mid] == target </span><span class="cov0" title="0">{
+                        return mid
+                }</span> else<span class="cov0" title="0"> if arr[mid] &lt; target </span><span class="cov0" title="0">{
+                        left = mid + 1
+                }</span> else<span class="cov0" title="0"> {
+                        right = mid - 1
+                }</span>
+        }
+        <span class="cov0" title="0">return -1</span>
+}
+
+// Подготовка данных для бенчмарков
+func generateSortedSlice(size int) []int <span class="cov0" title="0">{
+        slice := make([]int, size)
+        for i := range slice </span><span class="cov0" title="0">{
+                slice[i] = i
+        }</span>
+        <span class="cov0" title="0">return slice</span>
+}
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package repository
+
+import (
+        "context"
+
+        "github.com/jackc/pgx/v5"
+)
+
+type Repository struct {
+        conn *pgx.Conn
+}
+
+func New(conn *pgx.Conn) *Repository <span class="cov8" title="1">{
+        return &amp;Repository{conn: conn}
+}</span>
+
+func (r *Repository) GetData(ctx context.Context, id int) (string, error) <span class="cov8" title="1">{
+        var data string
+        err := r.conn.QueryRow(ctx, "SELECT data FROM test_table WHERE id=$1", id).Scan(&amp;data)
+        if err != nil </span><span class="cov8" title="1">{
+                return "", err
+        }</span>
+        <span class="cov8" title="1">return data, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">// Code generated by mockery v2.43.2. DO NOT EDIT.
+
+package mocks
+
+import (
+        context "context"
+
+        mock "github.com/stretchr/testify/mock"
+)
+
+// DataProvider is an autogenerated mock type for the DataProvider type
+type DataProvider struct {
+        mock.Mock
+}
+
+// GetData provides a mock function with given fields: ctx, id
+func (_m *DataProvider) GetData(ctx context.Context, id int) (string, error) <span class="cov8" title="1">{
+        ret := _m.Called(ctx, id)
+
+        if len(ret) == 0 </span><span class="cov0" title="0">{
+                panic("no return value specified for GetData")</span>
+        }
+
+        <span class="cov8" title="1">var r0 string
+        var r1 error
+        if rf, ok := ret.Get(0).(func(context.Context, int) (string, error)); ok </span><span class="cov0" title="0">{
+                return rf(ctx, id)
+        }</span>
+        <span class="cov8" title="1">if rf, ok := ret.Get(0).(func(context.Context, int) string); ok </span><span class="cov0" title="0">{
+                r0 = rf(ctx, id)
+        }</span> else<span class="cov8" title="1"> {
+                r0 = ret.Get(0).(string)
+        }</span>
+
+        <span class="cov8" title="1">if rf, ok := ret.Get(1).(func(context.Context, int) error); ok </span><span class="cov0" title="0">{
+                r1 = rf(ctx, id)
+        }</span> else<span class="cov8" title="1"> {
+                r1 = ret.Error(1)
+        }</span>
+
+        <span class="cov8" title="1">return r0, r1</span>
+}
+
+// NewDataProvider creates a new instance of DataProvider. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
+// The first argument is typically a *testing.T value.
+func NewDataProvider(t interface {
+        mock.TestingT
+        Cleanup(func())
+}) *DataProvider <span class="cov8" title="1">{
+        mock := &amp;DataProvider{}
+        mock.Mock.Test(t)
+
+        t.Cleanup(func() </span><span class="cov8" title="1">{ mock.AssertExpectations(t) }</span>)
+
+        <span class="cov8" title="1">return mock</span>
+}
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package service
+
+import (
+        "context"
+        "errors"
+)
+
+//go:generate mockery --name DataProvider --output ./mocks --filename data_provider.go
+type DataProvider interface {
+        GetData(ctx context.Context, id int) (string, error)
+}
+
+type Service struct {
+        provider DataProvider
+}
+
+func New(provider DataProvider) *Service <span class="cov8" title="1">{
+        return &amp;Service{provider: provider}
+}</span>
+
+func (s *Service) ProcessData(ctx context.Context, id int) (string, error) <span class="cov8" title="1">{
+        data, err := s.provider.GetData(ctx, id)
+        if err != nil </span><span class="cov8" title="1">{
+                return "", err
+        }</span>
+
+        <span class="cov8" title="1">if data == "" </span><span class="cov0" title="0">{
+                return "", errors.New("data not found")
+        }</span>
+
+        <span class="cov8" title="1">return "Processed: " + data, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">package service
+
+import (
+        "testing"
+
+        "lessons/testing/service/mocks"
+)
+
+type TestHelper struct {
+        DataProvider *mocks.DataProvider
+        Service      *Service
+}
+
+func NewTestHelper(t *testing.T) *TestHelper <span class="cov8" title="1">{
+        dp := mocks.NewDataProvider(t)
+
+        return &amp;TestHelper{
+                DataProvider: dp,
+                Service:      New(dp),
+        }
+}</span>
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

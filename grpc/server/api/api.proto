@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package zhark0vv.grpc.education.api;
+option go_package = "zhark0vv/grpc/education/api;educationapi";
+
+import "google/api/annotations.proto";
+
+service EducationAPI {
+  rpc Greet(GreetRequest) returns (GreetResponse) {
+    option (google.api.http) = {
+      post: "/v1/greet"
+      body: "*"
+    };
+  };
+}
+
+message GreetRequest {
+  string name = 1;
+}
+
+message GreetResponse {
+  string message = 1;
+}

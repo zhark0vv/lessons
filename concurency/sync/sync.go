@@ -7,9 +7,9 @@ import (
 )
 
 func main() {
-	//syncWaitGroupExample()
+	// syncWaitGroupExample()
 	// syncAtomicExample()
-	//syncOnceExample()
+	syncOnceExample()
 	// syncMutexExample()
 	//syncRWMutexExample()
 }
@@ -51,17 +51,23 @@ func syncAtomicExample() {
 }
 
 func syncOnceExample() {
-	var once sync.Once
+	var (
+		once sync.Once
+		wg   sync.WaitGroup
+	)
 
 	printOnce := func() {
 		fmt.Println("This will be printed only once")
 	}
 
 	for i := 0; i < 5; i++ {
+		wg.Add(1)
 		go func() {
+			defer wg.Done()
 			once.Do(printOnce)
 		}()
 	}
+	defer wg.Wait()
 }
 
 func syncMutexExample() {

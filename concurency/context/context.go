@@ -11,8 +11,8 @@ func main() {
 	// contextBackgroundExample()
 	// contextTODOExample()
 	// contextWithCancelExample()
-	contextWithDeadlineExample()
-	// contextWithTimeoutExample()
+	// contextWithDeadlineExample()
+	contextWithTimeoutExample()
 }
 
 func contextBackgroundExample() {
@@ -67,22 +67,5 @@ func doWork(ctx context.Context, name string) {
 			fmt.Printf("%s: done, reason: %v\n", name, ctx.Err())
 			return
 		}
-	}
-}
-
-func contextWithValueExample() {
-	processRequest(ctx)
-}
-
-type dbHelper struct{}
-
-func (*dbHelper) Query(ctx context.Context, sql string, args []interface{}) {
-	tx := ctx.Value("tx")
-
-	if tx != nil {
-		// use tx
-		tx.Exec(sql, args)
-	} else {
-		db.Exec(sql, args)
 	}
 }
