@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 )
 
 //go:generate mockery --name DataProvider --output ./mocks --filename data_provider.go
@@ -21,7 +22,7 @@ func New(provider DataProvider) *Service {
 func (s *Service) ProcessData(ctx context.Context, id int) (string, error) {
 	data, err := s.provider.GetData(ctx, id)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to get data: %w", err)
 	}
 
 	if data == "" {

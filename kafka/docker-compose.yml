@@ -1,0 +1,55 @@
+version: '2'
+
+services:
+  zookeeper:
+    image: bitnami/zookeeper:latest
+    ports:
+      - "2181:2181"
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+      - ZOO_SERVER_ID=1
+      - ZOO_SERVERS=0.0.0.0:2888:3888
+
+  kafka:
+    image: bitnami/kafka:latest
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+    depends_on:
+      - zookeeper
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - "8089:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: "local-cluster"
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka:9092"
+      KAFKA_CLUSTERS_0_ZOOKEEPER: "zookeeper:2181"
+    depends_on:
+      - kafka
+      - zookeeper
+
+  init-topics:
+    image: confluentinc/cp-kafka:latest
+    command:
+      - /bin/bash
+      - -c
+      - |
+        echo "Waiting for Kafka to be ready...";
+        until kafka-topics --list --bootstrap-server kafka:9092; do
+          sleep 1;
+        done;
+        echo "Kafka is ready, creating topic...";
+        kafka-topics --create --topic logs_events --bootstrap-server kafka:9092 --partitions 3 --replication-factor 1 || echo "Topic already exists";
+    depends_on:
+      - kafka
+      - zookeeper

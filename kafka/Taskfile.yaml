@@ -1,0 +1,43 @@
+version: '3'
+
+tasks:
+  generate-proto:
+    cmds:
+      - echo "Generating gRPC code"
+      - mkdir -p gen/go
+      - |
+        protoc --proto_path=api/ \
+               --proto_path=../vendor-proto/googleapis \
+               --go_out=gen/go \
+               api/kafka/types.proto
+    deps:
+      - ensure-protoc
+
+  ensure-protoc:
+    cmds:
+      - |
+        if ! command -v protoc &> /dev/null; then
+          echo "protoc could not be found, installing it now..."
+          mkdir -p /tmp/protoc_install
+          curl -Lo /tmp/protoc_install/protoc.zip https://github.com/protocolbuffers/protobuf/releases/download/v27.3/protoc-27.3-linux-x86_64.zip
+          unzip /tmp/protoc_install/protoc.zip -d /usr/local
+          rm -rf /tmp/protoc_install
+          echo "protoc installed successfully!"
+        else
+          echo "protoc is already installed"
+        fi
+      - protoc --version
+
+  download-vendor-protos:
+    cmds:
+      - echo "Cloning Google APIs repo"
+      - mkdir -p vendor-proto
+      - git clone https://github.com/googleapis/googleapis.git vendor-proto/googleapis
+      - echo "Cloning gRPC-Gateway repo"
+      - git clone https://github.com/grpc-ecosystem/grpc-gateway.git vendor-proto/grpc-gateway
+    desc: "Clone full Google API and gRPC-Gateway proto repositories"
+
+  clean:
+    cmds:
+      - echo "Cleaning generated files..."
+      - rm -rf gen/go gen/swagger vendor-proto

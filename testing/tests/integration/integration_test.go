@@ -55,7 +55,6 @@ func setupPostgresContainer(t *testing.T) (testcontainers.Container, *pgx.Conn) 
 	}
 
 	// На самом деле, мы катим миграции в тестах, что не есть хорошо, но для примера сойдет
-
 	_, err = conn.Exec(ctx, "CREATE TABLE test_table (id SERIAL PRIMARY KEY, data TEXT)")
 	if err != nil {
 		t.Fatal(err)
@@ -88,6 +87,9 @@ func TestServiceIntegration(t *testing.T) {
 	s := service.New(repo)
 
 	ctx := context.Background()
+
+	// api ...
+
 	result, err := s.ProcessData(ctx, 1)
 
 	assert.NoError(t, err)

@@ -6,6 +6,7 @@ option go_package = "zhark0vv/grpc/education/api;educationapi";
 import "google/api/annotations.proto";
 
 service EducationAPI {
+  // Sends a greeting
   rpc Greet(GreetRequest) returns (GreetResponse) {
     option (google.api.http) = {
       post: "/v1/greet"
@@ -15,9 +16,17 @@ service EducationAPI {
 }
 
 message GreetRequest {
+  // The name of the person to greet.
   string name = 1;
 }
 
+message Cluster {
+  string name = 1;
+  string server = 2;
+  string certificate_authority_data = 3;
+}
+
 message GreetResponse {
-  string message = 1;
+  repeated string message = 1;
+  Cluster cluster = 2;
 }

@@ -50,6 +50,7 @@ func TestProcessData(t *testing.T) {
 			tt.mockFunc(th)
 
 			gotResult, gotErr := th.Service.ProcessData(context.Background(), tt.id)
+
 			require.ErrorIs(t, gotErr, tt.expectErr)
 			require.Equal(t, tt.expected, gotResult)
 		})

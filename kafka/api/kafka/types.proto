@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package kafka.types;
+
+option go_package = "zhark0vv/kafka/types;kafkatypes";
+
+import "google/protobuf/timestamp.proto";
+
+enum LogLevel {
+  LOG_LEVEL_UNSPECIFIED = 0;
+  LOG_LEVEL_DEBUG = 1;
+  LOG_LEVEL_INFO = 2;
+  LOG_LEVEL_WARNING = 3;
+  LOG_LEVEL_ERROR = 4;
+  LOG_LEVEL_CRITICAL = 5;
+}
+
+message LogEvent {
+  string message = 1;
+  LogLevel level = 2;
+  google.protobuf.Timestamp created_at = 3;
+}

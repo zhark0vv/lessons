@@ -3,8 +3,6 @@ package controller
 import (
 	"context"
 
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	educationapi "lessons/grpc/server/gen/go/zhark0vv/grpc/education/api"
 )
 
@@ -20,5 +18,5 @@ func New() *Controller {
 
 func (c *Controller) Greet(_ context.Context,
 	req *educationapi.GreetRequest) (*educationapi.GreetResponse, error) {
-	return nil, status.Error(codes.FailedPrecondition, "you are not allowed to greet")
+	return &educationapi.GreetResponse{Message: "Hello, " + req.Name}, nil
 }
