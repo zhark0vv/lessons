@@ -41,3 +41,14 @@ tasks:
     cmds:
       - echo "Cleaning generated files..."
       - rm -rf gen/go gen/swagger vendor-proto
+
+  add-to-scheme-registry:
+    cmds:
+      - echo "Adding schema to schema registry"
+      - |
+        curl -X POST http://localhost:8081/subjects/log_event-values/versions \
+        -H "Content-Type: application/vnd.schemaregistry.v1+json" \
+        -d '{
+        "schemaType": "PROTOBUF",
+        "schema": "syntax = \"proto3\"; package kafka.types; import \"google/protobuf/timestamp.proto\"; enum LogLevel { LOG_LEVEL_UNSPECIFIED = 0; LOG_LEVEL_DEBUG = 1; LOG_LEVEL_INFO = 2; LOG_LEVEL_WARNING = 3; LOG_LEVEL_ERROR = 4; LOG_LEVEL_CRITICAL = 5; } message LogEvent { string message = 1; LogLevel level = 2; google.protobuf.Timestamp created_at = 3; }"
+        }'
