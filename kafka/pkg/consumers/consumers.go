@@ -33,7 +33,7 @@ func NewConsumer(groupID, topic string, brokers []string, startOffset *int64, ha
 		MinBytes:    10e3, // 10KB
 		MaxBytes:    10e6, // 10MB
 		StartOffset: *startOffset,
-		MaxWait:     10 * time.Millisecond, // сколько мы готовы ждать сообщений в одной итерации
+		MaxWait:     3 * time.Second, // сколько мы готовы ждать сообщений в одной итерации
 	})
 	return &consumer{
 		Reader:  reader,
@@ -55,14 +55,14 @@ func (c *consumer) Consume(ctx context.Context) error {
 		return err
 	}
 
-	// Логика обработки сообщения через переданный хендлер
-	if err := c.handler(ctx, message.NewFromRaw(msg)); err != nil {
-		log.Printf("error handling message: %v", err)
+	// Коммит сообщения после успешной обработки
+	if err := c.Reader.CommitMessages(ctx, msg); err != nil {
 		return err
 	}
 
-	// Коммит сообщения после успешной обработки
-	if err := c.Reader.CommitMessages(ctx, msg); err != nil {
+	// Логика обработки сообщения через переданный хендлер
+	if err := c.handler(ctx, message.NewFromRaw(msg)); err != nil {
+		log.Printf("error handling message: %v", err)
 		return err
 	}
 

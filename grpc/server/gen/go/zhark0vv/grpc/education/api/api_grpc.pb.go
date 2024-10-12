@@ -26,6 +26,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type EducationAPIClient interface {
+	// Sends a greeting
 	Greet(ctx context.Context, in *GreetRequest, opts ...grpc.CallOption) (*GreetResponse, error)
 }
 
@@ -51,6 +52,7 @@ func (c *educationAPIClient) Greet(ctx context.Context, in *GreetRequest, opts .
 // All implementations must embed UnimplementedEducationAPIServer
 // for forward compatibility.
 type EducationAPIServer interface {
+	// Sends a greeting
 	Greet(context.Context, *GreetRequest) (*GreetResponse, error)
 	mustEmbedUnimplementedEducationAPIServer()
 }

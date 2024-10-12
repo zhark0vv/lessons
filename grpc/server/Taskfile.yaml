@@ -9,9 +9,11 @@ tasks:
         protoc --proto_path=api/ \
                --proto_path=../vendor-proto/googleapis \
                --proto_path=../vendor-proto/grpc-gateway \
+               --proto_path=../vendor-proto/protoc-gen-validate \
                --go_out=gen/go \
                --go-grpc_out=gen/go \
                --grpc-gateway_out=gen/go \
+               --validate_out="lang=go:gen/go" \
                api/api.proto
       - echo "Generating OpenAPI (Swagger) definitions with openapiv2"
       - mkdir -p gen/swagger
@@ -76,6 +78,7 @@ tasks:
       - git clone https://github.com/googleapis/googleapis.git vendor-proto/googleapis
       - echo "Cloning gRPC-Gateway repo"
       - git clone https://github.com/grpc-ecosystem/grpc-gateway.git vendor-proto/grpc-gateway
+      - git clone https://github.com/bufbuild/protoc-gen-validate.git vendor-proto/protoc-gen-validate
     desc: "Clone full Google API and gRPC-Gateway proto repositories"
 
   clean:

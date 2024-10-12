@@ -4,6 +4,7 @@ package zhark0vv.grpc.education.api;
 option go_package = "zhark0vv/grpc/education/api;educationapi";
 
 import "google/api/annotations.proto";
+import "validate/validate.proto";
 
 service EducationAPI {
   // Sends a greeting
@@ -17,16 +18,9 @@ service EducationAPI {
 
 message GreetRequest {
   // The name of the person to greet.
-  string name = 1;
-}
-
-message Cluster {
-  string name = 1;
-  string server = 2;
-  string certificate_authority_data = 3;
+  string name = 1 [(validate.rules).string.required = true];
 }
 
 message GreetResponse {
-  repeated string message = 1;
-  Cluster cluster = 2;
+  string message = 1;
 }
