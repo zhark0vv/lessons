@@ -9,7 +9,6 @@ import (
 )
 
 // Анти-коррупционный слой для интеграции с репозиторием продуктов
-
 type productRepo interface {
 	FindByID(ctx context.Context, id uuid.UUID) (*domain.Product, error)
 	Save(ctx context.Context, product *domain.Product) error
